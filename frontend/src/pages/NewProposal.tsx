@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Header } from '../components/Header';
 import { proposalService } from '../services/proposalService';
 import toast from 'react-hot-toast';
-import { Wand2 } from 'lucide-react';
+import { Wand2, Info } from 'lucide-react';
 
 export const NewProposal: React.FC = () => {
   const { t } = useTranslation();
@@ -67,6 +67,16 @@ export const NewProposal: React.FC = () => {
             <p className="text-gray-600 mb-6">
               {t('proposal.aiGenerate')}
             </p>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-start gap-3">
+              <Info className="text-blue-600 flex-shrink-0 mt-0.5" size={20} />
+              <p className="text-sm text-blue-800">
+                {t('proposal.preferencesHint')}{' '}
+                <Link to="/preferences" className="font-semibold underline hover:text-blue-900">
+                  {t('preferences.title')}
+                </Link>
+              </p>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>

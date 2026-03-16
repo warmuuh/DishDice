@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import type { ShoppingListItem as ShoppingItem } from '../types';
 import { Trash2 } from 'lucide-react';
 
@@ -14,7 +13,6 @@ export const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
   onToggle,
   onDelete,
 }) => {
-  const { t } = useTranslation();
 
   return (
     <div

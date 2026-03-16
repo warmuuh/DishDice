@@ -1,26 +1,23 @@
-# fly.toml app configuration file
+# fly.toml app configuration file generated for dishdice on 2026-03-16T11:04:49+01:00
+#
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
 app = 'dishdice'
 primary_region = 'iad'
 
 [build]
 
+[env]
+  PORT = '8080'
+
 [http_service]
   internal_port = 8080
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
-
-[[vm]]
-  memory = '256mb'
-  cpu_kind = 'shared'
-  cpus = 1
-
-[env]
-  PORT = '8080'
 
 [[services]]
   protocol = 'tcp'
@@ -52,3 +49,9 @@ primary_region = 'iad'
     method = 'get'
     path = '/health'
     protocol = 'http'
+
+[[vm]]
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 256

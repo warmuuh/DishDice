@@ -67,6 +67,7 @@
   "proposal": {
     "createNew": "Neuen Essensplan erstellen",
     "aiGenerate": "Lassen Sie die KI einen personalisierten wöchentlichen Essensplan für Sie erstellen!",
+    "preferencesHint": "Ihre diätetischen Präferenzen und Einschränkungen aus Ihrem Profil werden immer berücksichtigt. Aktualisieren Sie diese unter",
     "weekStarting": "Woche beginnt am (Montag) *",
     "weekPreferences": "Präferenzen für diese Woche (Optional)",
     "weekPreferencesPlaceholder": "Beispiel: Ich möchte Lasagne am Freitag und etwas Leichtes für Montag und Dienstag",

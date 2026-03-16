@@ -67,6 +67,7 @@
   "proposal": {
     "createNew": "Create New Meal Plan",
     "aiGenerate": "Let AI generate a personalized weekly meal plan for you!",
+    "preferencesHint": "Your dietary preferences and restrictions from your profile are always considered. Update them in",
     "weekStarting": "Week Starting On (Monday) *",
     "weekPreferences": "This Week's Preferences (Optional)",
     "weekPreferencesPlaceholder": "Example: I'd like lasagna on Friday, and something light for Monday and Tuesday",
