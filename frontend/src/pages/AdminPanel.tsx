@@ -3,7 +3,7 @@ import { Header } from '../components/Header';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { adminService } from '../services/adminService';
 import type { AdminUser } from '../types';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { Check, X } from 'lucide-react';
 
 export const AdminPanel: React.FC = () => {

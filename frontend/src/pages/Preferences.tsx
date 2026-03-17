@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Header } from '../components/Header';
 import { userService } from '../services/userService';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { Save } from 'lucide-react';
 
 export const Preferences: React.FC = () => {

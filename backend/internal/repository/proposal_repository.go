@@ -328,3 +328,29 @@ func (r *ProposalRepository) AddToHistory(tx *sql.Tx, userID, mealName string) e
 func (r *ProposalRepository) BeginTx() (*sql.Tx, error) {
 	return r.db.Begin()
 }
+
+func (r *ProposalRepository) GetProposalByUserAndDate(userID string, weekStartDate time.Time) (*models.WeeklyProposal, error) {
+	proposal := &models.WeeklyProposal{}
+	query := `
+		SELECT id, user_id, week_start_date, week_preferences, current_resources, created_at
+		FROM weekly_proposals
+		WHERE user_id = $1 AND week_start_date = $2
+	`
+
+	err := r.db.QueryRow(query, userID, weekStartDate).Scan(
+		&proposal.ID,
+		&proposal.UserID,
+		&proposal.WeekStartDate,
+		&proposal.WeekPreferences,
+		&proposal.CurrentResources,
+		&proposal.CreatedAt,
+	)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get proposal by user and date: %w", err)
+	}
+
+	return proposal, nil
+}

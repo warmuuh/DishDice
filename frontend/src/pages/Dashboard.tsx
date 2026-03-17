@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Header } from '../components/Header';
 import { proposalService } from '../services/proposalService';
 import type { WeeklyProposal } from '../types';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { Plus, Calendar, Trash2 } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {

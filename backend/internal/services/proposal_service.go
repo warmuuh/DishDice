@@ -25,6 +25,15 @@ func NewProposalService(proposalRepo *repository.ProposalRepository, userRepo *r
 }
 
 func (s *ProposalService) CreateWeeklyProposal(ctx context.Context, userID string, weekStartDate time.Time, weekPreferences, currentResources *string) (*models.WeeklyProposal, error) {
+	// Check if proposal already exists for this week
+	existing, err := s.proposalRepo.GetProposalByUserAndDate(userID, weekStartDate)
+	if err != nil {
+		return nil, fmt.Errorf("failed to check existing proposal: %w", err)
+	}
+	if existing != nil {
+		return nil, fmt.Errorf("proposal already exists for this week")
+	}
+
 	// Get user preferences
 	user, err := s.userRepo.GetByID(userID)
 	if err != nil {

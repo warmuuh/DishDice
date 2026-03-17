@@ -4,7 +4,7 @@ import { Header } from '../components/Header';
 import { ShoppingListItem } from '../components/ShoppingListItem';
 import { shoppingService } from '../services/shoppingService';
 import type { ShoppingListItem as ShoppingItem } from '../types';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { Plus, Trash2, Eye, EyeOff } from 'lucide-react';
 
 export const ShoppingList: React.FC = () => {

@@ -82,6 +82,7 @@
     "generated": "Meal plan generated successfully!",
     "selectDate": "Please select a week start date",
     "generateFailed": "Failed to generate meal plan",
+    "alreadyExists": "A meal plan already exists for this week. You can regenerate individual days in the plan, or delete and create a new one.",
     "loadFailed": "Failed to load proposal",
     "notFound": "Proposal not found",
     "weeklyPlan": "Weekly Meal Plan",

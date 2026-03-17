@@ -108,7 +108,11 @@ func (h *ProposalHandler) CreateProposal(w http.ResponseWriter, r *http.Request)
 
 	proposal, err := h.proposalService.CreateWeeklyProposal(r.Context(), userID, weekStartDate, req.WeekPreferences, req.CurrentResources)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if err.Error() == "proposal already exists for this week" {
+			http.Error(w, err.Error(), http.StatusConflict)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 

@@ -82,6 +82,7 @@
     "generated": "Essensplan erfolgreich generiert!",
     "selectDate": "Bitte wählen Sie ein Startdatum für die Woche",
     "generateFailed": "Fehler beim Generieren des Essensplans",
+    "alreadyExists": "Für diese Woche existiert bereits ein Essensplan. Sie können einzelne Tage im Plan neu generieren oder den Plan löschen und einen neuen erstellen.",
     "loadFailed": "Fehler beim Laden des Vorschlags",
     "notFound": "Vorschlag nicht gefunden",
     "weeklyPlan": "Wöchentlicher Essensplan",

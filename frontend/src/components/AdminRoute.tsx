@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LoadingSpinner } from './LoadingSpinner';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 interface AdminRouteProps {
   children: React.ReactNode;

@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Header } from '../components/Header';
 import { proposalService } from '../services/proposalService';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { Wand2, Info } from 'lucide-react';
 
 export const NewProposal: React.FC = () => {
@@ -48,7 +48,11 @@ export const NewProposal: React.FC = () => {
       toast.success(t('proposal.generated'));
       navigate(`/proposals/${proposal.id}`);
     } catch (error: any) {
-      toast.error(error.response?.data || t('proposal.generateFailed'));
+      if (error.response?.status === 409) {
+        toast.error(t('proposal.alreadyExists'));
+      } else {
+        toast.error(error.response?.data || t('proposal.generateFailed'));
+      }
     } finally {
       setLoading(false);
     }

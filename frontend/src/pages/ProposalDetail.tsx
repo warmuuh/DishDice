@@ -7,7 +7,7 @@ import { RegenerateModal } from '../components/RegenerateModal';
 import { proposalService } from '../services/proposalService';
 import { mealService } from '../services/mealService';
 import type { WeeklyProposal, DailyMealOption } from '../types';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { Calendar, ArrowLeft } from 'lucide-react';
 
 export const ProposalDetail: React.FC = () => {
