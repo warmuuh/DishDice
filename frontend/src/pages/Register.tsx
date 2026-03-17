@@ -34,9 +34,15 @@ export const Register: React.FC = () => {
     setLoading(true);
 
     try {
-      await register({ email, password });
-      toast.success(t('auth.registerSuccess'));
-      navigate('/dashboard');
+      const result = await register({ email, password });
+
+      if (result.status === 'pending') {
+        toast.success('Registration successful! Waiting for admin approval.');
+        navigate('/waiting-approval');
+      } else {
+        toast.success(t('auth.registerSuccess'));
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       toast.error(error.response?.data || t('auth.registerFailed'));
     } finally {

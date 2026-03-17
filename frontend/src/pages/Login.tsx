@@ -27,7 +27,15 @@ export const Login: React.FC = () => {
       toast.success(t('auth.loginSuccess'));
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(error.response?.data || t('auth.loginFailed'));
+      const errorMessage = error.response?.data || error.message || t('auth.loginFailed');
+
+      if (errorMessage.includes('pending')) {
+        toast.error('Your account is pending approval. Please wait.');
+      } else if (errorMessage.includes('rejected')) {
+        toast.error('Your account has been rejected. Please contact support.');
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

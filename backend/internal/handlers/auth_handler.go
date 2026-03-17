@@ -72,18 +72,35 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.authService.GenerateToken(user.ID)
+	// If user is pending, don't generate token
+	if user.Status == models.StatusPending {
+		response := models.RegisterResponse{
+			Message: "Registration successful. Your account is pending approval.",
+			Status:  "pending",
+			User:    *user,
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	// Auto-approved users (first admin) get token immediately
+	token, err := h.authService.GenerateToken(user)
 	if err != nil {
 		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 		return
 	}
 
-	response := models.LoginResponse{
-		Token: token,
-		User:  *user,
+	tokenPtr := &token
+	response := models.RegisterResponse{
+		Status: "approved",
+		Token:  tokenPtr,
+		User:   *user,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(response)
 }
 

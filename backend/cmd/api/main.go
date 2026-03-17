@@ -57,6 +57,7 @@ func main() {
 	proposalService := services.NewProposalService(proposalRepo, userRepo, aiClient)
 	mealService := services.NewMealService(proposalRepo, userRepo, aiClient)
 	shoppingService := services.NewShoppingService(shoppingRepo, proposalRepo)
+	adminService := services.NewAdminService(userRepo)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService, userRepo)
@@ -64,6 +65,7 @@ func main() {
 	proposalHandler := handlers.NewProposalHandler(proposalService, shoppingService)
 	mealHandler := handlers.NewMealHandler(mealService, shoppingService)
 	shoppingHandler := handlers.NewShoppingHandler(shoppingService)
+	adminHandler := handlers.NewAdminHandler(adminService)
 
 	// Setup router
 	r := chi.NewRouter()
@@ -99,6 +101,7 @@ func main() {
 		// Protected routes
 		r.Group(func(r chi.Router) {
 			r.Use(middleware.Auth(authService))
+			r.Use(middleware.RequireApproved)
 
 			// Auth
 			r.Get("/auth/me", authHandler.GetMe)
@@ -125,6 +128,18 @@ func main() {
 			r.Put("/shopping-list/{id}/toggle", shoppingHandler.ToggleItem)
 			r.Delete("/shopping-list/checked", shoppingHandler.DeleteChecked)
 			r.Delete("/shopping-list/{id}", shoppingHandler.DeleteItem)
+		})
+
+		// Admin routes
+		r.Group(func(r chi.Router) {
+			r.Use(middleware.Auth(authService))
+			r.Use(middleware.RequireApproved)
+			r.Use(middleware.RequireAdmin)
+
+			r.Get("/admin/users", adminHandler.ListAllUsers)
+			r.Get("/admin/users/pending", adminHandler.ListPendingUsers)
+			r.Put("/admin/users/{id}/approve", adminHandler.ApproveUser)
+			r.Put("/admin/users/{id}/reject", adminHandler.RejectUser)
 		})
 	})
 

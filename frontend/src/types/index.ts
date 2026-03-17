@@ -3,6 +3,8 @@ export interface User {
   email: string;
   preferences?: string;
   language: string;
+  role: string;
+  status: string;
   created_at: string;
   updated_at: string;
 }
@@ -20,6 +22,22 @@ export interface RegisterRequest {
 export interface LoginResponse {
   token: string;
   user: User;
+}
+
+export interface RegisterResponse {
+  message?: string;
+  status: string;
+  token?: string;
+  user: User;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  role: string;
+  status: string;
+  language: string;
+  created_at: string;
 }
 
 export interface MealShoppingItem {

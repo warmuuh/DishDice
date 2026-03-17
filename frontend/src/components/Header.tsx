@@ -2,11 +2,11 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, User, ShoppingCart, Home, Settings } from 'lucide-react';
+import { LogOut, User, ShoppingCart, Home, Settings, Shield } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -46,6 +46,16 @@ export const Header: React.FC = () => {
               <Settings size={20} />
               <span>{t('nav.preferences')}</span>
             </Link>
+
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="flex items-center space-x-2 hover:text-secondary transition"
+              >
+                <Shield size={20} />
+                <span>Admin</span>
+              </Link>
+            )}
 
             <div className="flex items-center space-x-4 border-l border-white/30 pl-6">
               <div className="flex items-center space-x-2">

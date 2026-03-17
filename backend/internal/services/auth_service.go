@@ -63,8 +63,19 @@ func (s *AuthService) Login(email, password string) (*models.User, string, error
 		return nil, "", fmt.Errorf("invalid email or password")
 	}
 
+	// Check user status
+	if user.Status == models.StatusPending {
+		return nil, "", fmt.Errorf("account is pending approval")
+	}
+	if user.Status == models.StatusRejected {
+		return nil, "", fmt.Errorf("account has been rejected")
+	}
+	if user.Status != models.StatusApproved {
+		return nil, "", fmt.Errorf("account is not active")
+	}
+
 	// Generate JWT token
-	token, err := s.GenerateToken(user.ID)
+	token, err := s.GenerateToken(user)
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to generate token: %w", err)
 	}
@@ -72,9 +83,11 @@ func (s *AuthService) Login(email, password string) (*models.User, string, error
 	return user, token, nil
 }
 
-func (s *AuthService) GenerateToken(userID string) (string, error) {
+func (s *AuthService) GenerateToken(user *models.User) (string, error) {
 	claims := jwt.MapClaims{
-		"user_id": userID,
+		"user_id": user.ID,
+		"role":    user.Role,
+		"status":  user.Status,
 		"exp":     time.Now().Add(24 * 7 * time.Hour).Unix(), // 7 days
 	}
 
@@ -87,7 +100,13 @@ func (s *AuthService) GenerateToken(userID string) (string, error) {
 	return tokenString, nil
 }
 
-func (s *AuthService) ValidateToken(tokenString string) (string, error) {
+type TokenClaims struct {
+	UserID string
+	Role   string
+	Status string
+}
+
+func (s *AuthService) ValidateToken(tokenString string) (*TokenClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -96,22 +115,29 @@ func (s *AuthService) ValidateToken(tokenString string) (string, error) {
 	})
 
 	if err != nil {
-		return "", fmt.Errorf("failed to parse token: %w", err)
+		return nil, fmt.Errorf("failed to parse token: %w", err)
 	}
 
 	if !token.Valid {
-		return "", fmt.Errorf("invalid token")
+		return nil, fmt.Errorf("invalid token")
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return "", fmt.Errorf("invalid token claims")
+		return nil, fmt.Errorf("invalid token claims")
 	}
 
 	userID, ok := claims["user_id"].(string)
 	if !ok {
-		return "", fmt.Errorf("invalid user_id in token")
+		return nil, fmt.Errorf("invalid user_id in token")
 	}
 
-	return userID, nil
+	role, _ := claims["role"].(string)
+	status, _ := claims["status"].(string)
+
+	return &TokenClaims{
+		UserID: userID,
+		Role:   role,
+		Status: status,
+	}, nil
 }

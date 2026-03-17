@@ -1,9 +1,9 @@
 import { api } from './api';
-import type { LoginRequest, RegisterRequest, LoginResponse, User } from '../types';
+import type { LoginRequest, RegisterRequest, LoginResponse, RegisterResponse, User } from '../types';
 
 export const authService = {
-  async register(data: RegisterRequest): Promise<LoginResponse> {
-    const response = await api.post<LoginResponse>('/auth/register', data);
+  async register(data: RegisterRequest): Promise<RegisterResponse> {
+    const response = await api.post<RegisterResponse>('/auth/register', data);
     return response.data;
   },
 

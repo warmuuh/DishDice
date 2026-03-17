@@ -2,13 +2,16 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { AdminRoute } from './components/AdminRoute';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { WaitingApproval } from './pages/WaitingApproval';
 import { Dashboard } from './pages/Dashboard';
 import { NewProposal } from './pages/NewProposal';
 import { ProposalDetail } from './pages/ProposalDetail';
 import { ShoppingList } from './pages/ShoppingList';
 import { Preferences } from './pages/Preferences';
+import { AdminPanel } from './pages/AdminPanel';
 
 function App() {
   return (
@@ -44,6 +47,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/waiting-approval" element={<WaitingApproval />} />
 
           <Route
             path="/dashboard"
@@ -87,6 +91,15 @@ function App() {
               <ProtectedRoute>
                 <Preferences />
               </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminPanel />
+              </AdminRoute>
             }
           />
 
