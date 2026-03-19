@@ -11,18 +11,20 @@ import (
 )
 
 type AuthService struct {
-	userRepo  *repository.UserRepository
-	jwtSecret string
+	userRepo   *repository.UserRepository
+	ticketRepo *repository.TicketRepository
+	jwtSecret  string
 }
 
-func NewAuthService(userRepo *repository.UserRepository, jwtSecret string) *AuthService {
+func NewAuthService(userRepo *repository.UserRepository, ticketRepo *repository.TicketRepository, jwtSecret string) *AuthService {
 	return &AuthService{
-		userRepo:  userRepo,
-		jwtSecret: jwtSecret,
+		userRepo:   userRepo,
+		ticketRepo: ticketRepo,
+		jwtSecret:  jwtSecret,
 	}
 }
 
-func (s *AuthService) Register(email, password, language string) (*models.User, error) {
+func (s *AuthService) Register(email, password, language, ticket string) (*models.User, error) {
 	// Check if user already exists
 	existingUser, err := s.userRepo.GetByEmail(email)
 	if err != nil {
@@ -32,16 +34,44 @@ func (s *AuthService) Register(email, password, language string) (*models.User, 
 		return nil, fmt.Errorf("user with this email already exists")
 	}
 
+	// Validate ticket if provided
+	autoApprove := false
+	if ticket != "" {
+		ticketData, err := s.ticketRepo.GetByToken(ticket)
+		if err != nil {
+			return nil, fmt.Errorf("failed to validate ticket: %w", err)
+		}
+		if ticketData == nil {
+			return nil, fmt.Errorf("invalid registration ticket")
+		}
+		if ticketData.IsUsed {
+			return nil, fmt.Errorf("registration ticket has already been used")
+		}
+		if time.Now().After(ticketData.ExpiresAt) {
+			return nil, fmt.Errorf("registration ticket has expired")
+		}
+		autoApprove = true
+	}
+
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 
-	// Create user with language preference
-	user, err := s.userRepo.CreateWithLanguage(email, string(hashedPassword), language)
+	// Create user with language preference and ticket auto-approval
+	user, err := s.userRepo.CreateWithLanguageAndTicket(email, string(hashedPassword), language, autoApprove)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %w", err)
+	}
+
+	// Mark ticket as used if applicable
+	if ticket != "" && autoApprove {
+		err = s.ticketRepo.MarkTicketUsed(ticket, user.ID)
+		if err != nil {
+			// Log warning but don't fail registration since user was already created
+			fmt.Printf("Warning: failed to mark ticket as used: %v\n", err)
+		}
 	}
 
 	return user, nil

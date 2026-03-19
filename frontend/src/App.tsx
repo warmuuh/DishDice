@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -13,11 +12,13 @@ import { ProposalDetail } from './pages/ProposalDetail';
 import { ShoppingList } from './pages/ShoppingList';
 import { Preferences } from './pages/Preferences';
 import { AdminPanel } from './pages/AdminPanel';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+
         <ToastContainer
           position="top-center"
           autoClose={4000}
@@ -31,7 +32,6 @@ function App() {
           theme="light"
           style={{ top: '80px' }}
         />
-
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

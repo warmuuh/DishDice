@@ -1,5 +1,5 @@
 import { api } from './api';
-import type { AdminUser } from '../types';
+import type { AdminUser, CreateTicketResponse } from '../types';
 
 export const adminService = {
   async getAllUsers(): Promise<AdminUser[]> {
@@ -18,5 +18,10 @@ export const adminService = {
 
   async rejectUser(userId: string): Promise<void> {
     await api.put(`/admin/users/${userId}/reject`);
+  },
+
+  async createTicket(): Promise<CreateTicketResponse> {
+    const response = await api.post<CreateTicketResponse>('/admin/tickets');
+    return response.data;
   },
 };

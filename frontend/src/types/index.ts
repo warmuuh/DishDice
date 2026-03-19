@@ -17,6 +17,7 @@ export interface LoginRequest {
 export interface RegisterRequest {
   email: string;
   password: string;
+  ticket?: string;
 }
 
 export interface LoginResponse {
@@ -109,4 +110,26 @@ export interface AddShoppingItemRequest {
   item_name: string;
   quantity: string;
   unit: string;
+}
+
+export interface RegistrationTicket {
+  id: string;
+  token: string;
+  created_by: string;
+  used_by?: string;
+  created_at: string;
+  expires_at: string;
+  used_at?: string;
+  is_used: boolean;
+}
+
+export interface CreateTicketResponse {
+  ticket: RegistrationTicket;
+  registration_link: string;
+}
+
+export interface ValidateTicketResponse {
+  valid: boolean;
+  message?: string;
+  expires_at?: string;
 }

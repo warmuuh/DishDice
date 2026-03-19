@@ -21,6 +21,10 @@ func (r *UserRepository) Create(email, passwordHash string) (*models.User, error
 }
 
 func (r *UserRepository) CreateWithLanguage(email, passwordHash, language string) (*models.User, error) {
+	return r.CreateWithLanguageAndTicket(email, passwordHash, language, false)
+}
+
+func (r *UserRepository) CreateWithLanguageAndTicket(email, passwordHash, language string, autoApprove bool) (*models.User, error) {
 	user := &models.User{
 		ID:           uuid.New().String(),
 		Email:        email,
@@ -40,6 +44,8 @@ func (r *UserRepository) CreateWithLanguage(email, passwordHash, language string
 	status := models.StatusPending
 	if userCount == 0 {
 		role = models.RoleAdmin
+		status = models.StatusApproved
+	} else if autoApprove {
 		status = models.StatusApproved
 	}
 

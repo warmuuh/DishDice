@@ -48,16 +48,18 @@ func main() {
 	userRepo := repository.NewUserRepository(db)
 	proposalRepo := repository.NewProposalRepository(db)
 	shoppingRepo := repository.NewShoppingRepository(db)
+	ticketRepo := repository.NewTicketRepository(db)
 
 	// Initialize AI client
 	aiClient := ai.NewClient(cfg.OpenAIAPIKey)
 
 	// Initialize services
-	authService := services.NewAuthService(userRepo, cfg.JWTSecret)
+	authService := services.NewAuthService(userRepo, ticketRepo, cfg.JWTSecret)
 	proposalService := services.NewProposalService(proposalRepo, userRepo, aiClient)
 	mealService := services.NewMealService(proposalRepo, userRepo, aiClient)
 	shoppingService := services.NewShoppingService(shoppingRepo, proposalRepo)
 	adminService := services.NewAdminService(userRepo)
+	ticketService := services.NewTicketService(ticketRepo, cfg.FrontendURL)
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService, userRepo)
@@ -66,6 +68,7 @@ func main() {
 	mealHandler := handlers.NewMealHandler(mealService, shoppingService)
 	shoppingHandler := handlers.NewShoppingHandler(shoppingService)
 	adminHandler := handlers.NewAdminHandler(adminService)
+	ticketHandler := handlers.NewTicketHandler(ticketService)
 
 	// Setup router
 	r := chi.NewRouter()
@@ -97,6 +100,9 @@ func main() {
 		// Auth routes (public)
 		r.Post("/auth/register", authHandler.Register)
 		r.Post("/auth/login", authHandler.Login)
+
+		// Ticket validation (public)
+		r.Get("/tickets/{token}/validate", ticketHandler.ValidateTicket)
 
 		// Protected routes
 		r.Group(func(r chi.Router) {
@@ -140,6 +146,7 @@ func main() {
 			r.Get("/admin/users/pending", adminHandler.ListPendingUsers)
 			r.Put("/admin/users/{id}/approve", adminHandler.ApproveUser)
 			r.Put("/admin/users/{id}/reject", adminHandler.RejectUser)
+			r.Post("/admin/tickets", ticketHandler.CreateTicket)
 		})
 	})
 

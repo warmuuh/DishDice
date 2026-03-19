@@ -26,6 +26,7 @@ type User struct {
 type RegisterRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Ticket   string `json:"ticket,omitempty"`
 }
 
 type LoginRequest struct {

@@ -10,6 +10,9 @@ export const AdminPanel: React.FC = () => {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('pending');
   const [loading, setLoading] = useState(true);
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [generatedLink, setGeneratedLink] = useState('');
+  const [creatingTicket, setCreatingTicket] = useState(false);
 
   useEffect(() => {
     loadUsers();
@@ -58,6 +61,25 @@ export const AdminPanel: React.FC = () => {
     }
   };
 
+  const handleCreateTicket = async () => {
+    setCreatingTicket(true);
+    try {
+      const response = await adminService.createTicket();
+      setGeneratedLink(response.registration_link);
+      setShowTicketModal(true);
+      toast.success('Registration link created!');
+    } catch (error) {
+      toast.error('Failed to create registration link');
+    } finally {
+      setCreatingTicket(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generatedLink);
+    toast.success('Link copied to clipboard!');
+  };
+
   const getStatusBadge = (status: string) => {
     const colors = {
       pending: 'bg-yellow-100 text-yellow-800',
@@ -79,6 +101,48 @@ export const AdminPanel: React.FC = () => {
         <h1 className="text-4xl font-heading font-bold text-gray-900 mb-8">
           Admin Panel
         </h1>
+
+        {/* Create Registration Link Button */}
+        <div className="mb-6">
+          <button
+            onClick={handleCreateTicket}
+            disabled={creatingTicket}
+            className="px-6 py-3 bg-gradient-to-r from-primary to-accent text-white rounded-lg font-semibold hover:shadow-lg transform hover:scale-105 transition disabled:opacity-50"
+          >
+            {creatingTicket ? 'Generating...' : 'Create Registration Link'}
+          </button>
+        </div>
+
+        {/* Ticket Modal */}
+        {showTicketModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl shadow-2xl p-6 max-w-lg w-full">
+              <h3 className="text-2xl font-heading font-bold text-gray-900 mb-4">
+                Registration Link Created
+              </h3>
+              <p className="text-gray-600 mb-4">
+                Share this link with the new user. It's valid for 2 weeks and can only be used once.
+              </p>
+              <div className="bg-gray-100 p-4 rounded-lg mb-4 break-all">
+                <code className="text-sm">{generatedLink}</code>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={copyToClipboard}
+                  className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-opacity-90 transition"
+                >
+                  Copy Link
+                </button>
+                <button
+                  onClick={() => setShowTicketModal(false)}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Filter Tabs */}
         <div className="mb-6 flex space-x-2">

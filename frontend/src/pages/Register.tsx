@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-toastify';
+import { ticketService } from '../services/ticketService';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 export const Register: React.FC = () => {
   const { t } = useTranslation();
@@ -12,6 +14,37 @@ export const Register: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const ticket = searchParams.get('ticket');
+  const [validatingTicket, setValidatingTicket] = useState(!!ticket);
+  const [ticketValid, setTicketValid] = useState(false);
+  const [ticketMessage, setTicketMessage] = useState('');
+
+  useEffect(() => {
+    if (ticket) {
+      validateTicket(ticket);
+    }
+  }, [ticket]);
+
+  const validateTicket = async (token: string) => {
+    try {
+      const response = await ticketService.validateTicket(token);
+      if (response.valid) {
+        setTicketValid(true);
+        toast.success('Valid registration link! Your account will be auto-approved.');
+      } else {
+        setTicketValid(false);
+        setTicketMessage(response.message || 'Invalid ticket');
+        toast.error(response.message || 'Invalid registration link');
+        setTimeout(() => navigate('/login?error=invalid_ticket'), 3000);
+      }
+    } catch (error) {
+      toast.error('Failed to validate registration link');
+      setTimeout(() => navigate('/login?error=ticket_validation_failed'), 3000);
+    } finally {
+      setValidatingTicket(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +67,7 @@ export const Register: React.FC = () => {
     setLoading(true);
 
     try {
-      const result = await register({ email, password });
+      const result = await register({ email, password, ticket: ticket || undefined });
 
       if (result.status === 'pending') {
         toast.success('Registration successful! Waiting for admin approval.');
@@ -50,9 +83,43 @@ export const Register: React.FC = () => {
     }
   };
 
+  if (validatingTicket) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-secondary via-accent to-primary flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center">
+          <LoadingSpinner />
+          <p className="mt-4 text-gray-600">Validating registration link...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (ticket && !ticketValid) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-secondary via-accent to-primary flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center">
+          <div className="text-red-500 text-5xl mb-4">❌</div>
+          <h2 className="text-2xl font-heading font-bold text-gray-900 mb-2">
+            Invalid Registration Link
+          </h2>
+          <p className="text-gray-600 mb-6">{ticketMessage}</p>
+          <p className="text-sm text-gray-500">Redirecting to login...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary via-accent to-primary flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+        {ticketValid && (
+          <div className="mb-4 p-3 bg-green-100 border border-green-400 rounded-lg">
+            <p className="text-green-800 text-sm font-semibold">
+              ✅ Using pre-approved registration link
+            </p>
+          </div>
+        )}
+
         <div className="text-center mb-8">
           <h1 className="text-4xl font-heading font-bold text-primary mb-2">🎲 {t('app.name')}</h1>
           <p className="text-gray-600">{t('auth.createAccount')}</p>

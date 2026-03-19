@@ -13,6 +13,7 @@ type Config struct {
 	OpenAIAPIKey   string
 	Port           string
 	AllowedOrigins string
+	FrontendURL    string
 }
 
 func Load() (*Config, error) {
@@ -28,6 +29,7 @@ func Load() (*Config, error) {
 		OpenAIAPIKey:   os.Getenv("OPENAI_API_KEY"),
 		Port:           os.Getenv("PORT"),
 		AllowedOrigins: os.Getenv("ALLOWED_ORIGINS"),
+		FrontendURL:    os.Getenv("FRONTEND_URL"),
 	}
 
 	// Set defaults
@@ -36,6 +38,9 @@ func Load() (*Config, error) {
 	}
 	if cfg.AllowedOrigins == "" {
 		cfg.AllowedOrigins = "http://localhost:5173"
+	}
+	if cfg.FrontendURL == "" {
+		cfg.FrontendURL = "http://localhost:5173"
 	}
 
 	// Validate required fields

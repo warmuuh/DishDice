@@ -10,6 +10,8 @@ AI-powered weekly meal planning application that helps you decide "what should w
 - **User Preferences**: Set dietary restrictions, favorite cuisines, and food preferences
 - **Meal History Tracking**: AI avoids repeating recent meals for variety
 - **Resource Utilization**: Tell the AI what ingredients you have, and it will incorporate them
+- **Admin Approval System**: First user becomes admin, subsequent users require approval
+- **Pre-Approved Registration Links**: Admins can generate single-use registration links that auto-approve users
 
 ## Tech Stack
 
@@ -191,6 +193,8 @@ fly secrets set JWT_SECRET=your-secret-key
 fly secrets set OPENAI_API_KEY=sk-your-key
 fly secrets set ALLOWED_ORIGINS=https://your-app.fly.dev
 ```
+
+Note: `FRONTEND_URL` is already set in `fly.toml` to `https://dishdice.fly.dev`
 
 5. **Deploy**:
 ```bash

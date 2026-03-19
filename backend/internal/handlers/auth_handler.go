@@ -66,7 +66,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	// Detect language from browser Accept-Language header
 	language := detectLanguage(r)
 
-	user, err := h.authService.Register(req.Email, req.Password, language)
+	user, err := h.authService.Register(req.Email, req.Password, language, req.Ticket)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
